@@ -21,12 +21,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadData() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final projectsProvider = Provider.of<ProjectsProvider>(context, listen: false);
-    
-    final user = authProvider.currentUser;
-    if (user != null) {
-      await projectsProvider.loadProjects(user['id'], user['rol']);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final projectsProvider = Provider.of<ProjectsProvider>(context, listen: false);
+
+      final user = authProvider.currentUser;
+      if (user != null) {
+        // Validar que el usuario tenga los campos necesarios
+        if (user['id'] == null || user['rol'] == null) {
+          throw Exception('Datos de usuario incompletos');
+        }
+        await projectsProvider.loadProjects(user['id'], user['rol']);
+      }
+    } catch (error) {
+      print('Error cargando datos del dashboard: $error');
+      if (mounted) {
+        Helpers.showSnackBar(
+          context,
+          'Error al cargar los proyectos. Por favor intenta de nuevo.',
+          isError: true
+        );
+      }
     }
   }
 

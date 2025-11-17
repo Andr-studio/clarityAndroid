@@ -13,9 +13,21 @@ class FirebaseProjectsService {
       if (userRol == 'cliente') {
         // Clientes solo ven sus propios proyectos
         query = query.where('creadorId', isEqualTo: userId);
+        final querySnapshot = await query.get();
+        return querySnapshot.docs
+            .map((doc) => ProjectModel.fromFirestore(doc))
+            .toList();
       } else if (userRol == 'team') {
         // Miembros del equipo ven proyectos donde están asignados
-        query = query.where('equipo', arrayContains: {'userId': userId});
+        // Firebase no soporta arrayContains con objetos complejos,
+        // por lo que cargamos todos y filtramos en el cliente
+        final querySnapshot = await _firestore.collection('proyectos').get();
+        return querySnapshot.docs
+            .map((doc) => ProjectModel.fromFirestore(doc))
+            .where((project) {
+          // Filtrar proyectos donde el usuario está en el equipo
+          return project.equipo.any((member) => member.userId == userId);
+        }).toList();
       }
       // Admin ve todos los proyectos (sin filtro adicional)
 
