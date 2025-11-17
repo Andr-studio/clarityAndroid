@@ -95,16 +95,31 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  late Future<bool> _authCheckFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Llamar a checkAuthentication solo una vez al inicializar
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _authCheckFuture = authProvider.checkAuthentication();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
-        // Verificar autenticación
+        // Usar la Future guardada en initState en lugar de crear una nueva
         return FutureBuilder<bool>(
-          future: authProvider.checkAuthentication(),
+          future: _authCheckFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
