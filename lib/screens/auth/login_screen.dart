@@ -38,6 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (result['success'] == true) {
       final user = result['user'];
+
+      // Validar que el usuario tenga todos los campos requeridos
+      if (user == null || user['rol'] == null) {
+        Helpers.showSnackBar(
+          context,
+          'Error: Datos de usuario incompletos. Por favor contacta al administrador.',
+          isError: true
+        );
+        await authProvider.logout();
+        return;
+      }
+
       final rol = user['rol'];
 
       // Navegar según rol
@@ -45,8 +57,15 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pushReplacementNamed(AppRoutes.adminPanel);
       } else if (rol == UserRoles.team) {
         Navigator.of(context).pushReplacementNamed(AppRoutes.teamPanel);
-      } else {
+      } else if (rol == UserRoles.cliente) {
         Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+      } else {
+        Helpers.showSnackBar(
+          context,
+          'Error: Rol de usuario no válido ($rol). Por favor contacta al administrador.',
+          isError: true
+        );
+        await authProvider.logout();
       }
     } else {
       Helpers.showSnackBar(context, result['message'] ?? 'Error al iniciar sesión', isError: true);
