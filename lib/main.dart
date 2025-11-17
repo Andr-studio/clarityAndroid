@@ -14,7 +14,7 @@ import 'utils/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // IMPORTANTE: Configura Firebase aquí con tu google-services.json
   await Firebase.initializeApp();
 
@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
               borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
           ),
-          cardTheme: CardTheme(
+          cardTheme: CardThemeData(
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
@@ -115,7 +115,7 @@ class AuthWrapper extends StatelessWidget {
             if (snapshot.data == true && authProvider.currentUser != null) {
               // Usuario autenticado - redirigir según rol
               final rol = authProvider.currentUser!['rol'];
-              
+
               if (rol == UserRoles.admin) {
                 return const AdminPanelScreen();
               } else if (rol == UserRoles.team) {
