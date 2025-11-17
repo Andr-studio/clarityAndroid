@@ -81,9 +81,9 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const AuthWrapper(),
+        initialRoute: AppRoutes.login,
         routes: {
-          AppRoutes.login: (context) => const LoginScreen(),
+          AppRoutes.login: (context) => const AuthWrapper(),
           AppRoutes.register: (context) => const RegisterScreen(),
           AppRoutes.forgotPassword: (context) => const ForgotPasswordScreen(),
           AppRoutes.dashboard: (context) => const DashboardScreen(),
